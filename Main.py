@@ -9,7 +9,6 @@ def getPokemonByID(id):
 		if i.id == id: return i
 
 
-
 def loadMonsterInfo():
 	global pokemen
 	pokemen = []
@@ -40,21 +39,13 @@ def loadMonsterInfo():
 		if (int(singleStat[1]) == 1): p.health = int(singleStat[2])
 		if (int(singleStat[1]) == 2): p.attack = int(singleStat[2])
 		if (int(singleStat[1]) == 3): p.defense = int(singleStat[2])
-		if (int(singleStat[1]) == 6): p.speed = int(singleStat[2])
-
+		if (int(singleStat[1]) == 4): p.speed = int(singleStat[2])
 
 
 def main():
 	global pokemen
 
 	loadMonsterInfo()
-
-	print(pokemen[100].id)
-	print(pokemen[100].name)
-	print(pokemen[100].health)
-	print(pokemen[100].attack)
-	print(pokemen[100].defense)
-	print(pokemen[100].speed)
 
 
 if (__name__ == "__main__"): main()
