@@ -1,8 +1,11 @@
 from Monster import *
 import Tkinter as Tk
+import tkSimpleDialog
+import socket
 
 pokemen = []
 root = None
+sock = None
 
 def getPokemonByID(id):
 	global pokemen
@@ -47,7 +50,16 @@ def exit():
 	print("Exit")
 
 def connect():
-	print("Connect")
+	setupSocket()
+
+def send(s):
+	global sock
+	if sock != None:
+		sock.send(s)
+
+def swap1():
+	send("Swapping for 1")
+
 
 def initScreen():
 	global root
@@ -59,7 +71,7 @@ def initScreen():
 	root.title("Pokemen")
 	root.update()
 
-	exitButton =T k.Button(text="Quit", command=exit)
+	exitButton = Tk.Button(text="Quit", command=exit)
 	exitButton.grid(row=1, column=1, sticky="W")
 
 	connectButton = Tk.Button(text="Connect", command=connect)
@@ -74,10 +86,21 @@ def initScreen():
 
 	swaps = []
 	for i in range(0, 3):
-		s = Tk.Button(text = "Swap for " + str(i))
-		s.grid(row = 3+i, column = 
+		s = Tk.Button(text = "Swap for " + str(i), command=swap1)
+		s.grid(row = i + 3, column = 4)
 
 	root.mainloop()
+
+def setupSocket():
+	global sock
+
+	name = tkSimpleDialog.askstring("Name", "What is your username?")
+
+	sock = socket.socket()
+	sock.connect(("", 50000))
+	print(sock.recv(1024))
+	sock.send("Name:" + name)
+
 
 def main():
 	global pokemen
