@@ -1,6 +1,6 @@
 from Monster import *
-import Tkinter as Tk
-import tkSimpleDialog
+from tkinter import *
+import tkinter.simpledialog as simpledialog
 import socket
 
 pokemen = []
@@ -55,10 +55,10 @@ def connect():
 def send(s):
 	global sock
 	if sock != None:
-		sock.send(s)
+		sock.send(s.encode("utf-8"))
 
-def swap1():
-	send("Swapping for 1")
+def swap(n):
+	send("Swapping for " + str(n))
 
 
 def initScreen():
@@ -66,27 +66,27 @@ def initScreen():
 	width = 720
 	height = 402
 
-	root = Tk.Tk()
+	root = Tk()
 	root.geometry(str(width) + "x" + str(height) + "+300+300")
 	root.title("Pokemen")
 	root.update()
 
-	exitButton = Tk.Button(text="Quit", command=exit)
+	exitButton = Button(text="Quit", command=exit)
 	exitButton.grid(row=1, column=1, sticky="W")
 
-	connectButton = Tk.Button(text="Connect", command=connect)
+	connectButton = Button(text="Connect", command=connect)
 	connectButton.grid(row=1, column=2)
 
-	log = Tk.Listbox(height=15)
+	log = Listbox(height=15)
 	log.grid(row=2, column=1, columnspan=2)
 
-	canvas = Tk.Canvas(width=300, height=275)
+	canvas = Canvas(width=300, height=275)
 	canvas.create_rectangle(0, 0, 1000, 1000, fill="blue")
 	canvas.grid(row=1, column=3, rowspan=3, sticky="N")
 
 	swaps = []
 	for i in range(0, 3):
-		s = Tk.Button(text = "Swap for " + str(i), command=swap1)
+		s = Button(text = "Swap for " + str(i), command= lambda: swap(i))
 		s.grid(row = i + 3, column = 4)
 
 	root.mainloop()
@@ -94,12 +94,13 @@ def initScreen():
 def setupSocket():
 	global sock
 
-	name = tkSimpleDialog.askstring("Name", "What is your username?")
+	name = simpledialog.askstring("Name", "What is your username?")
 
 	sock = socket.socket()
-	sock.connect(("", 50000))
-	print(sock.recv(1024))
-	sock.send("Name:" + name)
+	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	sock.connect(("localhost", 50000))
+	print(sock.recv(1024).decode("utf-8"))
+	send("Name:" + name)
 
 
 def main():
