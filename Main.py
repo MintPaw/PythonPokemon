@@ -1,11 +1,14 @@
 from Monster import *
 from tkinter import *
+from _thread import *
 import tkinter.simpledialog as simpledialog
 import socket
 
 pokemen = []
 root = None
 sock = None
+playerNumber = None
+enemyNumber = None
 
 def getPokemonByID(id):
 	global pokemen
@@ -45,6 +48,15 @@ def loadMonsterInfo():
 		if (int(singleStat[1]) == 2): p.attack = int(singleStat[2])
 		if (int(singleStat[1]) == 3): p.defense = int(singleStat[2])
 		if (int(singleStat[1]) == 4): p.speed = int(singleStat[2])
+
+def process(s):
+	global playerNumber
+
+	print(s)
+
+	command = s.split(":")
+
+	if (command[0] == "playerNumber"): playerNumber = int(command[1])
 
 def exit():
 	print("Exit")
@@ -86,7 +98,10 @@ def initScreen():
 
 	swaps = []
 	for i in range(0, 3):
-		s = Button(text = "Swap for " + str(i), command= lambda: swap(i))
+		print(i)
+		if (i == 0): s = Button(text = "Swap for " + str(i), command = lambda: swap(0))
+		if (i == 1): s = Button(text = "Swap for " + str(i), command = lambda: swap(1))
+		if (i == 2): s = Button(text = "Swap for " + str(i), command = lambda: swap(2))
 		s.grid(row = i + 3, column = 4)
 
 	root.mainloop()
@@ -99,15 +114,17 @@ def setupSocket():
 	sock = socket.socket()
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	sock.connect(("localhost", 50000))
-	print(sock.recv(1024).decode("utf-8"))
-	send("Name:" + name)
 
+	start_new_thread(listeningThread, ())
+
+def listeningThread():
+	while (True):
+		process(sock.recv(1024).decode("utf-8"))
 
 def main():
 	global pokemen
 
 	loadMonsterInfo()
 	initScreen()
-
 
 if (__name__ == "__main__"): main()
