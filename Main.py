@@ -3,10 +3,16 @@ from tkinter import *
 from _thread import *
 import tkinter.simpledialog as simpledialog
 import socket
+import pickle
 
 pokemen = []
+
 root = None
 sock = None
+
+playerInfo = None
+enemyName = None
+
 playerNumber = None
 enemyNumber = None
 
@@ -49,25 +55,34 @@ def loadMonsterInfo():
 		if (int(singleStat[1]) == 3): p.defense = int(singleStat[2])
 		if (int(singleStat[1]) == 4): p.speed = int(singleStat[2])
 
-def process(s):
+def sendStartData():
+	pass
+	#send("startData:" + )
+
+def process(p):
 	global playerNumber
+	global enemyNumber
 
-	print(s)
+	data = pickle.loads(p)
 
-	command = s.split(":")
+	if (data["mType"] == "init"):
+		playerNumber = data["playerNumber"]
 
-	if (command[0] == "playerNumber"): playerNumber = int(command[1])
+	print(playerNumber)
+
+	if (data["mType"] == "start"):
+
+		for i in data["players"]:
+			if (i != playerNumber):
+				enemyNumber = i
+
+		sendStartData()
 
 def exit():
 	print("Exit")
 
 def connect():
 	setupSocket()
-
-def send(s):
-	global sock
-	if sock != None:
-		sock.send(s.encode("utf-8"))
 
 def swap(n):
 	send("Swapping for " + str(n))
@@ -98,7 +113,6 @@ def initScreen():
 
 	swaps = []
 	for i in range(0, 3):
-		print(i)
 		if (i == 0): s = Button(text = "Swap for " + str(i), command = lambda: swap(0))
 		if (i == 1): s = Button(text = "Swap for " + str(i), command = lambda: swap(1))
 		if (i == 2): s = Button(text = "Swap for " + str(i), command = lambda: swap(2))
@@ -108,8 +122,9 @@ def initScreen():
 
 def setupSocket():
 	global sock
+	global playerName
 
-	name = simpledialog.askstring("Name", "What is your username?")
+	playerName = simpledialog.askstring("Name", "What is your username?")
 
 	sock = socket.socket()
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -118,8 +133,14 @@ def setupSocket():
 	start_new_thread(listeningThread, ())
 
 def listeningThread():
+	global sock
 	while (True):
-		process(sock.recv(1024).decode("utf-8"))
+		process(sock.recv(1024))
+
+def send(p):
+	global sock
+	if sock != None:
+		sock.send(pickle.dumps(p))
 
 def main():
 	global pokemen
