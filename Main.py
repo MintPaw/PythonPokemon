@@ -8,6 +8,9 @@ import pickle
 pokemen = []
 
 root = None
+pokemonList = None
+partyList = None
+
 sock = None
 
 playerInfo = None
@@ -60,6 +63,7 @@ def sendStartData():
 	#send("startData:" + )
 
 def process(p):
+	print(p)
 	global playerNumber
 	global enemyNumber
 
@@ -68,18 +72,20 @@ def process(p):
 	if (data["mType"] == "init"):
 		playerNumber = data["playerNumber"]
 
-	print(playerNumber)
-
 	if (data["mType"] == "start"):
 
-		for i in data["players"]:
-			if (i != playerNumber):
-				enemyNumber = i
+		if (data["players"][0] == playerNumber):
+			enemyNumber = data["players"][1]
+		elif (data["players"][1] == playerNumber):
+			enemyNumber = data["players"][0]
+		else:
+			return
 
 		sendStartData()
 
 def exit():
-	print("Exit")
+	global root
+	root.destroy()
 
 def connect():
 	setupSocket()
@@ -90,6 +96,10 @@ def swap(n):
 
 def initScreen():
 	global root
+	global pokemonList
+	global partyList
+	global pokemen
+
 	width = 720
 	height = 402
 
@@ -105,18 +115,26 @@ def initScreen():
 	connectButton.grid(row=1, column=2)
 
 	log = Listbox(height=15)
-	log.grid(row=2, column=1, columnspan=2)
+	log.grid(row=2, column=1, columnspan=2, rowspan=5)
 
-	canvas = Canvas(width=300, height=275)
+	canvas = Canvas(width=200, height=275)
 	canvas.create_rectangle(0, 0, 1000, 1000, fill="blue")
-	canvas.grid(row=1, column=3, rowspan=3, sticky="N")
+	canvas.grid(row=1, column=3, rowspan=5, sticky="N")
 
-	swaps = []
-	for i in range(0, 3):
-		if (i == 0): s = Button(text = "Swap for " + str(i), command = lambda: swap(0))
-		if (i == 1): s = Button(text = "Swap for " + str(i), command = lambda: swap(1))
-		if (i == 2): s = Button(text = "Swap for " + str(i), command = lambda: swap(2))
-		s.grid(row = i + 3, column = 4)
+	Button(text = "Swap for 1", command = lambda: swap(0), width=10).grid(row=1, column=4, sticky="N")
+	Button(text = "Swap for 2", command = lambda: swap(1), width=10).grid(row=1, column=5, sticky="N")
+	Button(text = "Swap for 3", command = lambda: swap(2), width=10).grid(row=2, column=4, sticky="N")
+
+	Button(text = "Attack 1", command = lambda: swap(0), width=10).grid(row=3, column=4, sticky="SW")
+	Button(text = "Attack 2", command = lambda: swap(1), width=10).grid(row=3, column=5, sticky="SW")
+	Button(text = "Attack 3", command = lambda: swap(2), width=10).grid(row=4, column=4, sticky="NW")
+	Button(text = "Attack 4", command = lambda: swap(4), width=10).grid(row=4, column=5, sticky="NW")
+
+	pokemonList = Listbox(width=10)
+	for i in pokemen:
+		pokemonList.insert(END, i.name)
+
+	pokemonList.grid(row=1, column=7, rowspan=100, sticky="N")
 
 	root.mainloop()
 
