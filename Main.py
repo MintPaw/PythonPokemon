@@ -123,7 +123,7 @@ def process(p):
 	if ("playerNumber" in data):
 		if (data["playerNumber"] != enemyNumber):
 			print("Info was ignored")
-			return\
+			return
 
 	if (data["mType"] == "move"):
 		global enemyMove
@@ -172,27 +172,150 @@ def resolveMoves():
 	p1 = party[currentMember]
 	p2 = enemyParty[currentEnemyMember]
 
+	if p1.stunned > 0:
+		p1.stunned -= 1
+
+	if p2.stunned > 0:
+		p2.stunned -= 1
+
 	if (p1.speed > p2.speed):
-		if (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
-			logInfo(playerName + " swaped his " + party[currentMember].name + " for his " + party[playerMove["choice"]].name)
+		
+		#friendly
+
+		if playerMove["stunned"]:
+			logInfo(playerName + "'s " + p1.name + " is stunned")
+
+		elif (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
+			logInfo(playerName + " swaped his " + p1.name + " for his " + party[playerMove["choice"]].name)
 			currentMember = playerMove["choice"]
 
-		if (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
+		elif (playerMove["choice"] == 3):
+			damage = doDamage(p1, p2)
+			logInfo(playerName + " attacks with " + p1.name + " for " + str(damage) + " damage")
+
+		elif (playerMove["choice"] == 4):
+			if playerMove["fail"]: 
+				logInfo(playerName + " attempts to stun with " + p1.name + ", and fails")
+			else:
+				logInfo(playerName + " attempts to stun with " + p1.name + ", and succeeds")
+				logInfo(p2.name + " is stunned for " + str(p1.stunTime) + " turns and takes " + str(p1.attack))
+				damage = doDamage(p1, p2)
+				p2.stunned += p1.stunTime
+
+		elif (playerMove["choice"] == 5):
+			if playerMove["fail"]: 
+				logInfo(playerName + " attempts to debuff with " + p1.name + ", and fails")
+			else:
+				logInfo(playerName + " attempts to debuff with " + p1.name + ", and succeeds")
+				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defense lasting " + str(p1.debuffTime) + " turns")
+				p2.debuff(p1.debuffAttackAmount, p1.debuffDefenceAmount, p1.debuffTime)
+
+		#enemy
+
+		if enemyMove["stunned"]:
+			logInfo(enemyName + "'s " + p2.name + " is stunned")
+		elif (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
+			logInfo(enemyName + " swaped his " + p2.name + " for his " + enemyParty[enemyMove["choice"]].name)
+			currentEnemyMember = enemyMove["choice"]
+
+		elif (enemyMove["choice"] == 3):
+			damage = doDamage(p2, p1)
+			logInfo(enemyName + " attacks with " + p2.name + " for " + str(damage) + " damage")
+
+		elif (enemyMove["choice"] == 4):
+			if enemyMove["fail"]: 
+				logInfo(enemyName + " attempts to stun with " + p2.name + ", and fails")
+			else:
+				logInfo(enemyName + " attempts to stun with " + p2.name + ", and succeeds")
+				logInfo(p1.name + " is stunned for " + str(p2.stunTime) + " turns and takes " + str(p2.attack))
+				damage = doDamage(p2, p1)
+				p1.stunned += p1.stunTime
+
+		elif (enemyMove["choice"] == 5):
+			if enemyMove["fail"]: 
+				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and fails")
+			else:
+				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and succeeds")
+				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defense lasting " + str(p2.debuffTime) + " turns")
+				p1.debuff(p2.debuffAttackAmount, p2.debuffDefenceAmount, p2.debuffTime)
+
+
+	if (p1.speed < p2.speed):
+
+		#enemy
+
+		if enemyMove["stunned"]:
+			logInfo(enemyName + "'s " + p2.name + " is stunned")
+
+		elif (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
 			logInfo(enemyName + " swaped his " + enemyParty[currentEnemyMember].name + " for his " + enemyParty[enemyMove["choice"]].name)
 			currentEnemyMember = enemyMove["choice"]
 
+		elif (enemyMove["choice"] == 3):
+			damage = doDamage(p2, p1)
+			logInfo(enemyName + " attacks with " + p2.name + " for " + str(damage) + " damage")
 
-		if (p1.speed < p2.speed):
-			if (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
-				logInfo(enemyName + " swaped his " + enemyParty[currentEnemyMember].name + " for his " + enemyParty[enemyMove["choice"]].name)
-				currentEnemyMember = enemyMove["choice"]
+		elif (enemyMove["choice"] == 4):
+			if enemyMove["fail"]: 
+				logInfo(enemyName + " attempts to stun with " + p2.name + ", and fails")
+			else:
+				logInfo(enemyName + " attempts to stun with " + p2.name + ", and succeeds")
+				logInfo(p1.name + " is stunned for " + str(p2.stunTime) + " turns and takes " + str(p2.attack))
+				damage = doDamage(p2, p1)
+				p1.stunned += p1.stunTime
 
-		if (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
+		elif (enemyMove["choice"] == 5):
+			if enemyMove["fail"]: 
+				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and fails")
+			else:
+				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and succeeds")
+				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defense lasting " + str(p2.debuffTime) + " turns")
+				p1.debuff(p2.debuffAttackAmount, p2.debuffDefenceAmount, p2.debuffTime)
+
+		#friendly
+
+		if playerMove["stunned"]:
+			logInfo(playerName + "'s " + p1.name + " is stunned")
+
+		elif (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
 			logInfo(playerName + " swaped his " + party[currentMember].name + " for his " + party[playerMove["choice"]].name)
 			currentMember = playerMove["choice"]
 
+		elif (playerMove["choice"] == 3):
+			damage = doDamage(p1, p2)
+			logInfo(playerName + " attacks with " + p1.name + " for " + str(damage) + " damage")
+
+		elif (playerMove["choice"] == 4):
+			if playerMove["fail"]: 
+				logInfo(playerName + " attempts to stun with " + p1.name + ", and fails")
+			else:
+				logInfo(playerName + " attempts to stun with " + p1.name + ", and succeeds")
+				logInfo(p2.name + " is stunned for " + str(p1.stunTime) + " turns and takes " + str(p1.attack))
+				damage = doDamage(p1, p2)
+				p2.stunned += p1.stunTime
+
+		elif (playerMove["choice"] == 5):
+			if playerMove["fail"]: 
+				logInfo(playerName + " attempts to debuff with " + p1.name + ", and fails")
+			else:
+				logInfo(playerName + " attempts to debuff with " + p1.name + ", and succeeds")
+				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defense lasting " + str(p1.debuffTime) + " turns")
+				p2.debuff(p1.debuffAttackAmount, p1.debuffDefenceAmount, p1.debuffTime)
+
+	for b in combatButtons:
+		b.config(state=NORMAL)
+
+	playerMove = None
+	enemyMove = None
 
 	draw()
+
+def doDamage(attacker, recip):
+	damageDealt = int(attacker.attack * (1 - recip.defense / 100))
+	recip.health -= damageDealt
+	if recip.health < 0: recip.health = 0
+
+	return damageDealt
 
 def logInfo(s):
 	global log
@@ -228,14 +351,9 @@ def draw():
 	global party
 	global enemyParty
 	global enemyName
-	
-	print("draw" + str(currentMember))
 
 	p1 = party[currentMember]
 	p2 = enemyParty[currentEnemyMember]
-
-	print(p1.name)
-	print(p2.name)
 
 	canvas.delete("all")
 
@@ -283,14 +401,19 @@ def choose(n):
 	data["choice"] = n
 
 	data["fail"] = False
+	data["stunned"] = False
 
-	if (n == 4): data["fail"] = random.randint(0, 100) > party[currentMember].stunChance
-	if (n == 6): data["fail"] = random.randint(0, 100) > party[currentMember].prepareChance
+	if n == 3 and party[currentMember].stunned > 0:
+		data["stunned"] = True
+	if n == 4:
+		data["fail"] = random.randint(0, 100) > party[currentMember].stunChance
+	if n == 6:
+		data["fail"] = random.randint(0, 100) > party[currentMember].prepareChance
 
 	playerMove = data
-	resolveMoves()
-
 	send(data)
+
+	resolveMoves()
 
 
 def addPokemon():
@@ -314,23 +437,44 @@ def giveTip(label):
 	global tip
 	global enemyParty
 	global party
+	global currentMember
 	global currentEnemyMember
+	global playerName
+	global enemyName
 	global playing
 
 	if not playing: return
 
-	p = party[currentEnemyMember]
+	p = party[currentMember]
+	p2 = enemyParty[currentEnemyMember]
 
 	text = ""
 
-	if (label == "swap1"): text = "Swap for " + party[0].name
-	if (label == "swap2"): text = "Swap for " + party[1].name
-	if (label == "swap3"): text = "Swap for " + party[2].name
+	if (label == "swap1"):
+		text = "Swap for " + party[0].name
 
-	if (label == "attack"): text = "Attack for " + str(p.attack) + " damage"
-	if (label == "stun"): text = "Attempt (" + str(p.stunChance) + "% chance)\nfor " + str(int(p.stunTime)) + " turns\n(They will also be attacked)"
-	if (label == "debuff"): text = "Debuff enemy attack by " + str(p.debuffAttackAmount) + "\nand defense by " + str(p.debuffDefenceAmount) + "\nfor " + str(p.debuffTime) + " turns (This will prevent swapping)"
-	if (label == "prepare"): text = "Skip attacking to prepare\n(" + str(p.prepareChance) + "% chance) to reflect\n" + str(p.prepareAmount) + "% damage\n(You will still take this damage)"
+	if (label == "swap2"):
+		text = "Swap for " + party[1].name
+
+	if (label == "swap3"):
+		text = "Swap for " + party[2].name
+
+
+	if (label == "attack"):
+		text = "Attack for " + str(p.attack) + " damageDealt"
+
+	if (label == "stun"):
+
+		text = "Attempt (" + str(p.stunChance) + "% chance)\nfor " + str(int(p.stunTime)) + " turns\n(They will also be attacked)"
+	if (label == "debuff"):
+		text = "Debuff enemy attack by " + str(p.debuffAttackAmount) + "\nand defense by " + str(p.debuffDefenceAmount) + "\nfor " + str(p.debuffTime) + " turns (This will prevent swapping)\n(Will referesh, not stack)"
+
+	if (label == "prepare"):
+		text = "Skip attacking to prepare\n(" + str(p.prepareChance) + "% chance) to reflect\n" + str(p.prepareAmount) + "% damage\n(You will still take this damage)"
+
+	if (label == "info"):
+		text = playerName + "'s " + p.name + ":\nAttack/Defense/Health/Speed:\n" + str(p.attack) + "/" + str(p.defense) + "/" + str(p.health) + "/" + str(p.speed) + "/"
+		text += "\n" + enemyName + "'s " + p2.name + ":\nAttack/Defense/Health/Speed:\n" + str(p2.attack) + "/" + str(p2.defense) + "/" + str(p2.health) + "/" + str(p2.speed) + "/"
 
 	tip.config(state=NORMAL)
 	tip.delete(1.0, END)
@@ -380,6 +524,10 @@ def initScreen():
 	b3.bind("<Enter>", lambda x: giveTip(copy.deepcopy("swap3")))
 	b3.grid(row=8, column=1, sticky="NW")
 
+	inf = Button(text = "Info", width=10)
+	inf.bind("<Enter>", lambda x: giveTip(copy.deepcopy("info")))
+	inf.grid(row=8, column=2, sticky="NW")
+
 
 	b4 = Button(text = "Attack", command = lambda: choose(3), width=10)
 	b4.bind("<Enter>", lambda x: giveTip(copy.deepcopy("attack")))
@@ -397,7 +545,7 @@ def initScreen():
 	b7.bind("<Enter>", lambda x: giveTip(copy.deepcopy("prepare")))
 	b7.grid(row=10, column=1, sticky="NW")
 
-	combatButtons = [b1, b2, b3, b4, b5, b6, b7]
+	combatButtons = [b1, b2, b3, b4, b5, b6, b7, inf]
 
 	for b in combatButtons:
 		b.config(state=DISABLED)
