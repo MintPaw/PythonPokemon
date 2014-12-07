@@ -82,7 +82,7 @@ def loadMonsterInfo():
 
 		if (int(singleStat[1]) == 1): p.maxHealth = int(singleStat[2])
 		if (int(singleStat[1]) == 2): p.attack = int(singleStat[2])
-		if (int(singleStat[1]) == 3): p.defense = int(singleStat[2])
+		if (int(singleStat[1]) == 3): p.defence = int(singleStat[2])
 		if (int(singleStat[1]) == 4): p.speed = int(singleStat[2])
 		p.health = p.maxHealth
 		p.createMoves()
@@ -186,7 +186,7 @@ def resolveMoves():
 			logInfo(playerName + "'s " + p1.name + " is stunned")
 
 		elif (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
-			logInfo(playerName + " swaped his " + p1.name + " for his " + party[playerMove["choice"]].name)
+			logInfo(playerName + " swapped his " + p1.name + " for his " + party[playerMove["choice"]].name)
 			currentMember = playerMove["choice"]
 
 		elif (playerMove["choice"] == 3):
@@ -207,7 +207,7 @@ def resolveMoves():
 				logInfo(playerName + " attempts to debuff with " + p1.name + ", and fails")
 			else:
 				logInfo(playerName + " attempts to debuff with " + p1.name + ", and succeeds")
-				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defense lasting " + str(p1.debuffTime) + " turns")
+				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defence lasting " + str(p1.debuffTime) + " turns")
 				p2.debuff(p1.debuffAttackAmount, p1.debuffDefenceAmount, p1.debuffTime)
 
 		#enemy
@@ -215,7 +215,7 @@ def resolveMoves():
 		if enemyMove["stunned"]:
 			logInfo(enemyName + "'s " + p2.name + " is stunned")
 		elif (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
-			logInfo(enemyName + " swaped his " + p2.name + " for his " + enemyParty[enemyMove["choice"]].name)
+			logInfo(enemyName + " swapped his " + p2.name + " for his " + enemyParty[enemyMove["choice"]].name)
 			currentEnemyMember = enemyMove["choice"]
 
 		elif (enemyMove["choice"] == 3):
@@ -236,7 +236,7 @@ def resolveMoves():
 				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and fails")
 			else:
 				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and succeeds")
-				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defense lasting " + str(p2.debuffTime) + " turns")
+				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defence lasting " + str(p2.debuffTime) + " turns")
 				p1.debuff(p2.debuffAttackAmount, p2.debuffDefenceAmount, p2.debuffTime)
 
 
@@ -248,7 +248,7 @@ def resolveMoves():
 			logInfo(enemyName + "'s " + p2.name + " is stunned")
 
 		elif (enemyMove["choice"] >= 0 and enemyMove["choice"] <= 2):
-			logInfo(enemyName + " swaped his " + enemyParty[currentEnemyMember].name + " for his " + enemyParty[enemyMove["choice"]].name)
+			logInfo(enemyName + " swapped his " + enemyParty[currentEnemyMember].name + " for his " + enemyParty[enemyMove["choice"]].name)
 			currentEnemyMember = enemyMove["choice"]
 
 		elif (enemyMove["choice"] == 3):
@@ -269,7 +269,7 @@ def resolveMoves():
 				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and fails")
 			else:
 				logInfo(enemyName + " attempts to debuff with " + p2.name + ", and succeeds")
-				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defense lasting " + str(p2.debuffTime) + " turns")
+				logInfo(p1.name + " is debuffed for " + str(p2.debuffAttackAmount) + " attack and " + str(p2.debuffDefenceAmount) + " defence lasting " + str(p2.debuffTime) + " turns")
 				p1.debuff(p2.debuffAttackAmount, p2.debuffDefenceAmount, p2.debuffTime)
 
 		#friendly
@@ -278,7 +278,7 @@ def resolveMoves():
 			logInfo(playerName + "'s " + p1.name + " is stunned")
 
 		elif (playerMove["choice"] >= 0 and playerMove["choice"] <= 2):
-			logInfo(playerName + " swaped his " + party[currentMember].name + " for his " + party[playerMove["choice"]].name)
+			logInfo(playerName + " swapped his " + party[currentMember].name + " for his " + party[playerMove["choice"]].name)
 			currentMember = playerMove["choice"]
 
 		elif (playerMove["choice"] == 3):
@@ -299,7 +299,7 @@ def resolveMoves():
 				logInfo(playerName + " attempts to debuff with " + p1.name + ", and fails")
 			else:
 				logInfo(playerName + " attempts to debuff with " + p1.name + ", and succeeds")
-				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defense lasting " + str(p1.debuffTime) + " turns")
+				logInfo(p2.name + " is debuffed for " + str(p1.debuffAttackAmount) + " attack and " + str(p1.debuffDefenceAmount) + " defence lasting " + str(p1.debuffTime) + " turns")
 				p2.debuff(p1.debuffAttackAmount, p1.debuffDefenceAmount, p1.debuffTime)
 
 	for b in combatButtons:
@@ -311,7 +311,7 @@ def resolveMoves():
 	draw()
 
 def doDamage(attacker, recip):
-	damageDealt = int(attacker.attack * (1 - recip.defense / 100))
+	damageDealt = int(attacker.attack * (1 - recip.defence / 100))
 	recip.health -= damageDealt
 	if recip.health < 0: recip.health = 0
 
@@ -467,14 +467,14 @@ def giveTip(label):
 
 		text = "Attempt (" + str(p.stunChance) + "% chance)\nfor " + str(int(p.stunTime)) + " turns\n(They will also be attacked)"
 	if (label == "debuff"):
-		text = "Debuff enemy attack by " + str(p.debuffAttackAmount) + "\nand defense by " + str(p.debuffDefenceAmount) + "\nfor " + str(p.debuffTime) + " turns (This will prevent swapping)\n(Will referesh, not stack)"
+		text = "Debuff enemy attack by " + str(p.debuffAttackAmount) + "\nand defence by " + str(p.debuffDefenceAmount) + "\nfor " + str(p.debuffTime) + " turns (This will prevent swapping)\n(Will referesh, not stack)"
 
 	if (label == "prepare"):
 		text = "Skip attacking to prepare\n(" + str(p.prepareChance) + "% chance) to reflect\n" + str(p.prepareAmount) + "% damage\n(You will still take this damage)"
 
 	if (label == "info"):
-		text = playerName + "'s " + p.name + ":\nAttack/Defense/Health/Speed:\n" + str(p.attack) + "/" + str(p.defense) + "/" + str(p.health) + "/" + str(p.speed) + "/"
-		text += "\n" + enemyName + "'s " + p2.name + ":\nAttack/Defense/Health/Speed:\n" + str(p2.attack) + "/" + str(p2.defense) + "/" + str(p2.health) + "/" + str(p2.speed) + "/"
+		text = playerName + "'s " + p.name + ":\nAttack/defence/Health/Speed:\n" + str(p.attack) + "/" + str(p.defence) + "/" + str(p.health) + "/" + str(p.speed) + "/"
+		text += "\n" + enemyName + "'s " + p2.name + ":\nAttack/defence/Health/Speed:\n" + str(p2.attack) + "/" + str(p2.defence) + "/" + str(p2.health) + "/" + str(p2.speed) + "/"
 
 	tip.config(state=NORMAL)
 	tip.delete(1.0, END)
